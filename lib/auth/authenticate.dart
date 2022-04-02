@@ -1,6 +1,7 @@
 import 'package:chat_app/auth/sign_in.dart';
 import 'package:chat_app/auth/sign_up.dart';
 import 'package:chat_app/models/authtype.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class Authenticate extends StatefulWidget {
@@ -12,6 +13,29 @@ class Authenticate extends StatefulWidget {
 
 class _AuthenticateState extends State<Authenticate> {
   AuthType _authType = AuthType.signin;
+  void _requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+    if (settings.authorizationStatus != AuthorizationStatus.authorized) {
+      // No permission authorized
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _requestPermission();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -17,7 +17,7 @@ class _DashboardState extends State<Dashboard> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   void _requestNotificationpermision() async {
-    NotificationSettings settings = await _messaging.requestPermission(
+    _messaging.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -26,8 +26,6 @@ class _DashboardState extends State<Dashboard> {
       provisional: false,
       sound: true,
     );
-
-    print('User granted permission: ${settings.authorizationStatus}');
   }
 
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -48,6 +46,10 @@ class _DashboardState extends State<Dashboard> {
         print(message.notification!.title);
         print(message.notification!.body);
       }
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      //  To be used when a notificaton is opened
     });
   }
 
