@@ -59,5 +59,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<!-- Adding Image Picker -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow App to Pick Images</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow App to Pick Images</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow App to Pick Images</string>
+	<!-- Image Picker ends here -->
 </dict>
 </plist>

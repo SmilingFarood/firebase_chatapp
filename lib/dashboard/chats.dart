@@ -13,6 +13,9 @@ class Chats extends StatelessWidget {
           child: Text(
               FirebaseAuth.instance.currentUser!.displayName ?? 'Null Name'),
         ),
+        Center(
+          child: Text(FirebaseAuth.instance.currentUser!.email ?? 'Null email'),
+        ),
         ElevatedButton(
           onPressed: () async {
             await FirebaseAuth.instance.signOut();
