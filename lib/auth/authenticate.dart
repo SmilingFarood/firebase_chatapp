@@ -41,21 +41,20 @@ class _AuthenticateState extends State<Authenticate> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 16),
-          child: _authType == AuthType.signin
-              ? SignIn(
-                  authType: (val) {
+            padding: const EdgeInsets.only(left: 16.0, right: 16, top: 50),
+            child: _authType == AuthType.signin
+                ? SignIn(
+                    authType: (val) {
+                      setState(() {
+                        _authType = val;
+                      });
+                    },
+                  )
+                : SignUp(authType: (val) {
                     setState(() {
                       _authType = val;
                     });
-                  },
-                )
-              : SignUp(authType: (val) {
-                  setState(() {
-                    _authType = val;
-                  });
-                }),
-        ),
+                  })),
       ),
     );
   }

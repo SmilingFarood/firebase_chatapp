@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:chat_app/dashboard/chats.dart';
 import 'package:chat_app/dashboard/groups.dart';
 import 'package:chat_app/dashboard/profile.dart';
 import 'package:chat_app/dashboard/users.dart';
+import 'package:chat_app/misc/pick_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -15,42 +19,70 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  final _storage = FirebaseStorage.instance.ref();
+  bool _hasChecked = false;
 
   void _requestNotificationpermision() async {
     _messaging.requestPermission(
       alert: true,
-      announcement: false,
+      announcement: true,
       badge: true,
       carPlay: false,
       criticalAlert: false,
       provisional: false,
       sound: true,
     );
+    RemoteMessage? _initialMessage = await _messaging.getInitialMessage();
   }
 
-  FirebaseAuth auth = FirebaseAuth.instance;
-  Future lalala() async {
-    print(auth.currentUser!.displayName);
-    auth.currentUser!.getIdToken().then((value) {
-      print('This is ID token: $value');
-    });
+  Future<void> _setupInteractedMessage() async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+    }
+
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    if (message.data['type'] == 'chat') {
+      Navigator.pushNamed(
+        context, '/chat',
+        // arguments: ChatArguments(message),
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
     _requestNotificationpermision();
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Received a notification');
-      if (message.notification != null) {
-        print(message.notification!.title);
-        print(message.notification!.body);
-      }
-    });
+    _setupInteractedMessage();
+  }
 
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      //  To be used when a notificaton is opened
-    });
+  @override
+  void didChangeDependencies() async {
+    if (!_hasChecked) {
+      String? _imageUrl;
+
+      if (auth.currentUser!.photoURL == null) {
+        File? _userDisplayPhoto = await pickImage();
+        final _imageRef =
+            _storage.child('user_display_image/${auth.currentUser!.uid}.jpg');
+        if (_userDisplayPhoto != null) {
+          await _imageRef.putFile(_userDisplayPhoto);
+          _imageUrl = await _imageRef.getDownloadURL();
+        }
+        auth.currentUser!.updatePhotoURL(_imageUrl);
+      }
+      setState(() {
+        _hasChecked = true;
+      });
+    }
+    super.didChangeDependencies();
   }
 
   int _index = 0;
@@ -64,16 +96,7 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _screens[_index],
-          ElevatedButton(
-            onPressed: lalala,
-            child: const Text('press'),
-          )
-        ],
-      ),
+      body: _screens[_index],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (val) {
@@ -81,6 +104,8 @@ class _DashboardState extends State<Dashboard> {
             _index = val;
           });
         },
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.green,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),

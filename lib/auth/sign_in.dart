@@ -2,8 +2,8 @@ import 'package:chat_app/models/authtype.dart';
 import 'package:chat_app/widgets/custom_textformfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:flutter_signin_button/flutter_signin_button.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 class SignIn extends StatefulWidget {
   final Function(AuthType) authType;
@@ -18,23 +18,23 @@ class _SignInState extends State<SignIn> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
+  // Future<void> _signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //     final GoogleSignInAuthentication? googleAuth =
+  //         await googleUser?.authentication;
+  //     final credential = GoogleAuthProvider.credential(
+  //       accessToken: googleAuth?.accessToken,
+  //       idToken: googleAuth?.idToken,
+  //     );
 
-      await auth.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      print(e);
-    } catch (e) {
-      //
-    }
-  }
+  //     await auth.signInWithCredential(credential);
+  //   } on FirebaseAuthException catch (e) {
+  //     print(e);
+  //   } catch (e) {
+  //     //
+  //   }
+  // }
 
   Future<void> _signIn() async {
     try {
@@ -43,7 +43,7 @@ class _SignInState extends State<SignIn> {
         password: _passwordController.text,
       );
     } on FirebaseAuthException catch (e) {
-      print(e);
+      Text(e.message ?? 'An Error Occured');
     } catch (e) {
       //
     }
@@ -73,10 +73,10 @@ class _SignInState extends State<SignIn> {
               onPressed: _signIn,
               child: const Text('Sign in'),
             ),
-            SignInButton(
-              Buttons.Google,
-              onPressed: _signInWithGoogle,
-            ),
+            // SignInButton(
+            //   Buttons.Google,
+            //   onPressed: _signInWithGoogle,
+            // ),
             TextButton(
               onPressed: () {
                 widget.authType(AuthType.signup);
